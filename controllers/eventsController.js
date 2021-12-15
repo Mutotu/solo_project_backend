@@ -9,7 +9,7 @@ eventsController.create = async (req, res) => {
     const loggedInUser = await models.user.findOne({
       id: req.headers.authorization,
     });
-    console.log(loggedInUser, " loggedInUser");
+    // console.log(loggedInUser, " loggedInUser");
     const newEvent = await models.event.create({
       name: req.body.name,
       city: req.body.city,
@@ -30,7 +30,7 @@ eventsController.create = async (req, res) => {
 eventsController.getAllEvents = async (req, res) => {
   try {
     const allevents = await models.event.findAll();
-    console.log(allevents);
+    // console.log(allevents);
     res.json({ allevents });
   } catch (err) {
     console.log(err);
@@ -56,10 +56,15 @@ eventsController.getAllEvents = async (req, res) => {
 
 //Save an even an user likes/saves
 eventsController.saveEvent = async (req, res) => {
+  console.log(req.body);
   try {
+    ////
+    //// it keeps finding userid 1 /// fixed it by add where clause in findOne() lol
+    ////
     const loggedInUser = await models.user.findOne({
-      id: req.headers.authorization,
+      where: { id: req.headers.authorization },
     });
+    // console.log("========", loggedInUser, "===============================");
     const event = await models.event.findOne({
       where: {
         id: req.params.id,
@@ -81,12 +86,53 @@ eventsController.saveEvent = async (req, res) => {
 eventsController.getAllSavedEvents = async (req, res) => {
   try {
     const loggedInUser = await models.user.findOne({
-      id: req.headers.authorization,
+      where: { id: req.headers.authorization },
     });
-    const getEvents = await loggedInUser.getEvents();
-    console.log(getEvents);
-    res.json({ getEvents });
+    // console.log("===loggedinuser", loggedInUser.dataValues.id);
+
+    // const getEvents = await loggedInUser.dataValues.id.getEvents();
+    // const getEvents = await loggedInUser.getEvents();
+
+    const getEventsIds = await models.saved_event.findAll({
+      where: { userId: loggedInUser.dataValues.id },
+    });
+    ///get the eventids and store them
+    const eventsIds = [];
+    for (let i of getEventsIds) {
+      eventsIds.push(i.dataValues.eventId);
+    }
+    //get the events and save them to do res.json()
+    const savedEvents = [];
+    for (let i of eventsIds) {
+      const findEvent = await models.event.findOne({
+        where: { id: i },
+      });
+      savedEvents.push(findEvent);
+    }
+
+    // console.log(savedEvents);
+    res.json({ savedEvents });
   } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err });
+  }
+};
+
+//Delete an event
+//get eventid
+//get the userid
+eventsController.deleteEvent = async (req, res) => {
+  try {
+    const loggedInUser = await models.user.findOne({
+      where: { id: req.headers.authorization },
+    });
+    const deleteEvent = await models.saved_event.destroy({
+      where: { userId: loggedInUser.dataValues.id, eventId: req.params.id },
+    });
+    // console.log(deleteEvent);
+    res.json({ deleteEvent });
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ message: err });
   }
 };

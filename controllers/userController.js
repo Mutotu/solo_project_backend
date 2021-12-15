@@ -66,4 +66,21 @@ userController.updateUsername = async (req, res) => {
   }
 };
 
+userController.verifyUser = async (req, res) => {
+  try {
+    const verfiedUser = await models.user.findOne({
+      where: { id: req.headers.authorization },
+    });
+    console.log(verfiedUser);
+    // if (verfiedUser && verfiedUser.password === req.body.password) {
+    if (verfiedUser) {
+      res.json({ verfiedUser });
+    } else {
+      console.log("not matched");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = userController;

@@ -10,6 +10,13 @@ eventsRouter.get("/getall", eventsController.getAllEvents);
 
 ///this one brings what user creates
 // eventsRouter.get("/getSavedAll", eventsController.getSavedEvents);
+/////
+//this one doesnt work with eventscontroller
 eventsRouter.post("/save/:id", saveEvent);
-eventsRouter.get("/getsaves", getAllSavedEvents);
+
+//this one without eventscontroller worked
+// eventsRouter.get("/getsaves", getAllSavedEvents);
+eventsRouter.get("/getsaves", eventsController.getAllSavedEvents);
+//delete an event
+eventsRouter.delete("/delete/:id", eventsController.deleteEvent);
 module.exports = eventsRouter;
