@@ -46,7 +46,7 @@ eventsController.userCreatedEvent = async (req, res) => {
     const loggedInUser = await models.user.findOne({
       where: { id: req.headers.authorization },
     });
-    console.log(loggedInUser, "==========");
+    // console.log(loggedInUser, "==========");
     // const userSavedEvents = [];
     const events = await models.event.findAll({
       where: { userId: loggedInUser.dataValues.id },
@@ -145,14 +145,18 @@ eventsController.deleteEvent = async (req, res) => {
 /////errorr not seeing the newly added coulumn
 ///get the number of people attending
 eventsController.counterAttendees = async (req, res) => {
+  console.log(req.params.id);
+
   try {
     const event = await models.event.findOne({
       where: {
         id: req.params.id,
       },
     });
-    const attendee = event.dataValues.attendee;
+    //cant see the column name attendee
+    const attendee = event.dataValues;
     console.log(event);
+    console.log(attendee);
     res.json({ attendee });
   } catch (err) {
     console.log(err);
