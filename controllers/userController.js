@@ -18,16 +18,33 @@ userController.create = async (req, res) => {
   }
 };
 
+// userController.findUser = async (req, res) => {
+//   try {
+//     const foundUser = await models.user.findOne({
+//       where: {
+//         email: req.body.email,
+//         password: req.body.password,
+//       },
+//     });
+//     console.log(foundUser);
+//     res.json({ foundUser });
+//   } catch (err) {
+//     res.status(400).json({ message: err });
+//   }
+// };
+
 userController.findUser = async (req, res) => {
   try {
     const foundUser = await models.user.findOne({
       where: {
         email: req.body.email,
-        password: req.body.password,
       },
     });
-    console.log(foundUser);
-    res.json({ foundUser });
+    if (foundUser.password === req.body.password) {
+      res.json({ foundUser });
+    } else {
+      res.json("user not found");
+    }
   } catch (err) {
     res.status(400).json({ message: err });
   }
@@ -49,13 +66,15 @@ userController.deleteUser = async (req, res) => {
   }
 };
 
-userController.updateUsername = async (req, res) => {
+userController.updateBike = async (req, res) => {
+  console.log("========", req.headers.bike_type);
   try {
     const loggedInUser = await models.user.findOne({
-      id: req.headers.authorization,
+      where: { id: req.headers.authorization },
+      // where: { id: req.params.id },
     });
     const updating = await loggedInUser.update({
-      username: req.body.username,
+      bike_type: req.headers.bike_type,
     });
 
     console.log(updating);
@@ -63,6 +82,23 @@ userController.updateUsername = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: err });
+  }
+};
+
+userController.verifyUser = async (req, res) => {
+  try {
+    const verfiedUser = await models.user.findOne({
+      where: { id: req.headers.authorization },
+    });
+    console.log(verfiedUser);
+    // if (verfiedUser && verfiedUser.password === req.body.password) {
+    if (verfiedUser) {
+      res.json({ verfiedUser });
+    } else {
+      console.log("not matched");
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
 
