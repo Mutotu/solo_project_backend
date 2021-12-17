@@ -4,10 +4,11 @@ const eventsController = {};
 
 //Create an event
 eventsController.create = async (req, res) => {
+  console.log(req.headers);
   try {
     //get the id of the loggedin user
     const loggedInUser = await models.user.findOne({
-      id: req.headers.authorization,
+      where: { id: req.headers.authorization },
     });
     // console.log(loggedInUser, " loggedInUser");
     const newEvent = await models.event.create({
@@ -20,7 +21,8 @@ eventsController.create = async (req, res) => {
       userId: loggedInUser.dataValues.id,
     });
 
-    console.log(newEvent), res.json({ newEvent });
+    console.log(newEvent);
+    res.json({ newEvent });
   } catch (err) {
     res.status(400).json({ message: err });
   }
@@ -38,21 +40,24 @@ eventsController.getAllEvents = async (req, res) => {
   }
 };
 
-//naming is wrong here
 //Get all the events that one user creates
-// eventsController.getSavedEvents = async (req, res) => {
-//   try {
-//     const loggedInUser = await models.user.findOne({
-//       id: req.headers.authorization,
-//     });
-//     const userSavedEvents = await loggedInUser.getEvents();
-//     console.log(userSavedEvents);
-//     res.json({ userSavedEvents });
-//   } catch (err) {
-//     console.log(err);
-//     res.status(400).json({ message: err });
-//   }
-// };
+eventsController.userCreatedEvent = async (req, res) => {
+  try {
+    const loggedInUser = await models.user.findOne({
+      where: { id: req.headers.authorization },
+    });
+    console.log(loggedInUser, "==========");
+    // const userSavedEvents = [];
+    const events = await models.event.findAll({
+      where: { userId: loggedInUser.dataValues.id },
+    });
+    // console.log(events);
+    res.json({ events });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err });
+  }
+};
 
 //Save an even an user likes/saves
 eventsController.saveEvent = async (req, res) => {
@@ -134,6 +139,24 @@ eventsController.deleteEvent = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: err });
+  }
+};
+
+/////errorr not seeing the newly added coulumn
+///get the number of people attending
+eventsController.counterAttendees = async (req, res) => {
+  try {
+    const event = await models.event.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+    const attendee = event.dataValues.attendee;
+    console.log(event);
+    res.json({ attendee });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err });
   }
 };
 
