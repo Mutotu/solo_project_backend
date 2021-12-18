@@ -143,9 +143,10 @@ eventsController.deleteEvent = async (req, res) => {
 };
 
 /////errorr not seeing the newly added coulumn
-///get the number of people attending
+///add the number of people attending
+//modify this controller for put request
 eventsController.counterAttendees = async (req, res) => {
-  console.log(req.params.id);
+  console.log(req);
 
   try {
     const event = await models.event.findOne({
