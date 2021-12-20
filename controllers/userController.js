@@ -102,4 +102,16 @@ userController.verifyUser = async (req, res) => {
   }
 };
 
+userController.getUserInfo = async (req, res) => {
+  try {
+    const getUser = await models.user.findOne({
+      where: { id: req.params.id },
+    });
+    console.log(getUser);
+    res.json({ getUser });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = userController;

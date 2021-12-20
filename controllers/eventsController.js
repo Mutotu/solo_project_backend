@@ -61,7 +61,6 @@ eventsController.userCreatedEvent = async (req, res) => {
 
 //Save an even an user likes/saves
 eventsController.saveEvent = async (req, res) => {
-  console.log(req.body);
   try {
     ////
     //// it keeps finding userid 1 /// fixed it by add where clause in findOne() lol
@@ -69,19 +68,19 @@ eventsController.saveEvent = async (req, res) => {
     const loggedInUser = await models.user.findOne({
       where: { id: req.headers.authorization },
     });
-    // console.log("========", loggedInUser, "===============================");
+
     const event = await models.event.findOne({
       where: {
-        id: req.params.id,
+        id: req.body.id,
       },
     });
-    // console.log("=========", event, "==========");
+
     const saveEvent = await models.saved_event.create({
       userId: loggedInUser.dataValues.id,
       eventId: event.dataValues.id,
     });
-    console.log(saveEvent);
-    res.json({ saveEvent });
+    console.log(" saved event with id: ", saveEvent.id);
+    res.status(201).json({ saveEvent });
   } catch (err) {
     res.status(400).json({ message: err });
   }
@@ -93,10 +92,6 @@ eventsController.getAllSavedEvents = async (req, res) => {
     const loggedInUser = await models.user.findOne({
       where: { id: req.headers.authorization },
     });
-    // console.log("===loggedinuser", loggedInUser.dataValues.id);
-
-    // const getEvents = await loggedInUser.dataValues.id.getEvents();
-    // const getEvents = await loggedInUser.getEvents();
 
     const getEventsIds = await models.saved_event.findAll({
       where: { userId: loggedInUser.dataValues.id },
@@ -142,27 +137,27 @@ eventsController.deleteEvent = async (req, res) => {
   }
 };
 
-/////errorr not seeing the newly added coulumn
-///add the number of people attending
-//modify this controller for put request
+//get the number of saved events
 eventsController.counterAttendees = async (req, res) => {
-  console.log(req);
+  const eventResponse = {};
 
   try {
-    const event = await models.event.findOne({
-      where: {
-        id: req.params.id,
-      },
-    });
-    //cant see the column name attendee
-    const attendee = event.dataValues;
-    console.log(event);
-    console.log(attendee);
-    res.json({ attendee });
+    const eventsArray = await models.event.findAll();
+    for (let i = 0; i < eventsArray.length; i++) {
+      let currentEventId = eventsArray[i].id;
+      const eventsCount = await models.saved_event.count({
+        where: { eventId: currentEventId },
+      });
+      if (eventsCount > 0) {
+        eventResponse[currentEventId] = eventsCount;
+      }
+    }
+    res.status(200).json(eventResponse);
   } catch (err) {
     console.log(err);
     res.json({ message: err });
   }
 };
+//////////
 
 module.exports = eventsController;

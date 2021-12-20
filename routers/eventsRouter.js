@@ -34,7 +34,7 @@ const { verify } = require("../controllers/middleware/verify");
 eventsRouter.post("/create", [auth.verify], eventsController.create);
 eventsRouter.get("/getall", [auth.verify], eventsController.getAllEvents);
 
-eventsRouter.post("/save/:id", [auth.verify], saveEvent);
+eventsRouter.post("/save", [auth.verify], saveEvent);
 
 eventsRouter.get(
   "/getsaves",
@@ -45,5 +45,5 @@ eventsRouter.get(
 eventsRouter.delete("/delete/:id", [auth.verify], eventsController.deleteEvent);
 
 eventsRouter.get("/getUserEvents", eventsController.userCreatedEvent);
-eventsRouter.put("/attendee/:id", eventsController.counterAttendees);
+eventsRouter.get("/attendee", eventsController.counterAttendees);
 module.exports = eventsRouter;

@@ -7,4 +7,5 @@ userRouter.delete("/delete/:id", userController.deleteUser);
 userRouter.put("/update", userController.updateBike);
 ///
 userRouter.get("/verify", userController.verifyUser);
+userRouter.get("/getUserInfo/:id", userController.getUserInfo);
 module.exports = userRouter;
