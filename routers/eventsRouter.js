@@ -46,4 +46,5 @@ eventsRouter.delete("/delete/:id", [auth.verify], eventsController.deleteEvent);
 
 eventsRouter.get("/getUserEvents", eventsController.userCreatedEvent);
 eventsRouter.get("/attendee", eventsController.counterAttendees);
+eventsRouter.delete("/deleteMyEvent/:id", eventsController.deleteMyEvent);
 module.exports = eventsRouter;

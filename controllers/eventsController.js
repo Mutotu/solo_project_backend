@@ -160,4 +160,16 @@ eventsController.counterAttendees = async (req, res) => {
 };
 //////////
 
+eventsController.deleteMyEvent = async (req, res) => {
+  try {
+    const deletetedMyEvent = await models.event.destroy({
+      where: { id: req.params.id },
+    });
+    console.log(deletetedMyEvent);
+    res.json("deleted event");
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err });
+  }
+};
 module.exports = eventsController;
