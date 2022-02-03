@@ -4,7 +4,7 @@ const eventsController = {};
 
 //Create an event
 eventsController.create = async (req, res) => {
-  console.log(req.headers);
+  // console.log(req.headers);
   try {
     //get the id of the loggedin user
     const loggedInUser = await models.user.findOne({
@@ -21,7 +21,7 @@ eventsController.create = async (req, res) => {
       userId: loggedInUser.dataValues.id,
     });
 
-    console.log(newEvent);
+    // console.log(newEvent);
     res.json({ newEvent });
   } catch (err) {
     res.status(400).json({ message: err });
